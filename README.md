@@ -1,5 +1,7 @@
 # CS2 Randomizer — Crosshair & Loadout
 
+**Live:** https://xmichsenx.github.io/Cs2Randomizer/
+
 A static, frontend-only web app with two tools for Counter-Strike 2:
 
 - **Crosshair randomizer**: rolls a random crosshair, draws a pixel-accurate preview and gives you a share code you can import in CS2. It also gives the equivalent console commands.
