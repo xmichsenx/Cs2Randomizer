@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CS2 Randomizer — Crosshair &amp; Loadout</title>
+  <meta name="description" content="Random CS2 crosshair generator with live pixel preview and importable share codes, plus a random loadout picker covering every weapon, armor option and grenade.">
+  <meta name="theme-color" content="#0f1216">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true"><path d="M16 3v9M16 20v9M3 16h9M20 16h9" stroke="currentColor" stroke-width="3" stroke-linecap="square"/><rect x="14.5" y="14.5" width="3" height="3" fill="currentColor"/></svg>
+      <span>CS2 Randomizer</span>
+    </div>
+    <nav class="tabs" role="tablist">
+      <button class="tab" role="tab" id="tab-crosshair" aria-controls="panel-crosshair" aria-selected="true">Crosshair</button>
+      <button class="tab" role="tab" id="tab-loadout" aria-controls="panel-loadout" aria-selected="false">Loadout</button>
+    </nav>
+  </header>
+
+  <main>
+    <!-- ───────────── Crosshair ───────────── -->
+    <section class="panel" id="panel-crosshair" role="tabpanel" aria-labelledby="tab-crosshair">
+      <div class="xh-layout">
+        <div class="card stage-card">
+          <div class="stage" id="stage" data-bg="dust">
+            <canvas id="xh-canvas" aria-label="Crosshair preview"></canvas>
+          </div>
+          <div class="stage-toolbar">
+            <div class="seg" id="bg-picker" aria-label="Preview background">
+              <button data-bg="dust" title="Desert" aria-pressed="true"></button>
+              <button data-bg="sky" title="Sky"></button>
+              <button data-bg="foliage" title="Foliage"></button>
+              <button data-bg="concrete" title="Concrete"></button>
+              <button data-bg="dark" title="Dark"></button>
+              <button data-bg="white" title="White"></button>
+            </div>
+            <label class="inline">Zoom
+              <select id="zoom">
+                <option value="1">1× (true size)</option>
+                <option value="2">2×</option>
+                <option value="3" selected>3×</option>
+                <option value="4">4×</option>
+                <option value="6">6×</option>
+              </select>
+            </label>
+          </div>
+          <p class="hint" id="stage-hint"></p>
+        </div>
+
+        <div class="card controls-card">
+          <button class="btn-primary big" id="xh-roll">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h6v6H4zM14 14h6v6h-6zM14 4h6v6h-6zM4 14h6v6H4z" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+            Randomize crosshair
+          </button>
+          <p class="kbd-hint">or press <kbd>Space</kbd></p>
+
+          <div class="field">
+            <span class="label">Mode</span>
+            <div class="seg wide" id="xh-mode">
+              <button data-mode="sane" aria-pressed="true">Playable</button>
+              <button data-mode="chaos">Chaos</button>
+            </div>
+          </div>
+
+          <div class="field">
+            <span class="label">Styles in the draw</span>
+            <div class="chips" id="xh-styles"></div>
+          </div>
+
+          <div class="field">
+            <span class="label">Keep (don't randomize)</span>
+            <div class="chips" id="xh-locks">
+              <label class="chip"><input type="checkbox" value="style"><span>Style</span></label>
+              <label class="chip"><input type="checkbox" value="color"><span>Color</span></label>
+              <label class="chip"><input type="checkbox" value="size"><span>Size &amp; gap</span></label>
+              <label class="chip"><input type="checkbox" value="outline"><span>Outline</span></label>
+              <label class="chip"><input type="checkbox" value="toggles"><span>Dot / T / Recoil</span></label>
+            </div>
+          </div>
+
+          <div class="field">
+            <label class="label" for="xh-height">Authored for screen height</label>
+            <select id="xh-height">
+              <option value="720">720p</option>
+              <option value="768">768p</option>
+              <option value="900">900p</option>
+              <option value="1080" selected>1080p</option>
+              <option value="1200">1200p</option>
+              <option value="1440">1440p</option>
+              <option value="2160">2160p (4K)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="card code-card">
+          <div class="code-head">
+            <h2>Share code</h2>
+            <span class="badge" title="Format introduced by CS2 on 30 Sep 2026">CS2 format</span>
+          </div>
+          <div class="code-row">
+            <output class="code" id="xh-code" aria-live="polite"></output>
+            <button class="btn" id="xh-copy">Copy</button>
+          </div>
+          <p class="hint">In CS2 open <b>Settings → Crosshair/Scopes</b>, choose <b>Share or Import</b>, paste the code and press <b>Import</b>.</p>
+
+          <details class="console">
+            <summary>Console commands</summary>
+            <div class="code-row">
+              <output class="code small" id="xh-cvars"></output>
+              <button class="btn" id="xh-copy-cvars">Copy</button>
+            </div>
+          </details>
+
+          <details class="console">
+            <summary>Preview a code</summary>
+            <form class="code-row" id="xh-import">
+              <input id="xh-import-input" type="text" spellcheck="false" autocomplete="off" placeholder="CSvbPubOq37zTGqtsPTP5QTrp5CB4xFXiKRLfzJsm49ZRe" aria-label="Crosshair share code">
+              <button class="btn">Load</button>
+            </form>
+            <p class="error" id="xh-import-error" role="alert"></p>
+          </details>
+        </div>
+
+        <div class="card params-card">
+          <h2>Settings</h2>
+          <dl class="params" id="xh-params"></dl>
+        </div>
+
+        <div class="card history-card">
+          <div class="code-head">
+            <h2>History</h2>
+            <button class="btn ghost small" id="xh-clear-history">Clear</button>
+          </div>
+          <div class="history" id="xh-history"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ───────────── Loadout ───────────── -->
+    <section class="panel" id="panel-loadout" role="tabpanel" aria-labelledby="tab-loadout" hidden>
+      <div class="lo-layout">
+        <div class="card lo-controls">
+          <button class="btn-primary big" id="lo-roll">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h6v6H4zM14 14h6v6h-6zM14 4h6v6h-6zM4 14h6v6H4z" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+            Randomize loadout
+          </button>
+          <p class="kbd-hint">or press <kbd>Space</kbd></p>
+
+          <div class="field">
+            <span class="label">Side</span>
+            <div class="seg wide" id="lo-side">
+              <button data-side="T" class="t">Terrorist</button>
+              <button data-side="CT" class="ct">Counter-Terrorist</button>
+              <button data-side="random" aria-pressed="true">Random</button>
+            </div>
+          </div>
+
+          <div class="field">
+            <label class="label" for="lo-budget">Budget</label>
+            <select id="lo-budget">
+              <option value="Infinity" selected>No limit</option>
+              <option value="800">Pistol round — $800</option>
+              <option value="2000">Eco — $2,000</option>
+              <option value="3500">Force buy — $3,500</option>
+              <option value="5500">Full buy — $5,500</option>
+              <option value="16000">Max money — $16,000</option>
+              <option value="custom">Custom…</option>
+            </select>
+            <input id="lo-budget-custom" type="number" min="0" max="16000" step="50" value="4000" hidden aria-label="Custom budget">
+          </div>
+
+          <div class="field">
+            <span class="label">Roll</span>
+            <div class="chips" id="lo-parts">
+              <label class="chip"><input type="checkbox" value="primary" checked><span>Primary</span></label>
+              <label class="chip"><input type="checkbox" value="pistol" checked><span>Pistol</span></label>
+              <label class="chip"><input type="checkbox" value="armor" checked><span>Armor</span></label>
+              <label class="chip"><input type="checkbox" value="grenades" checked><span>Grenades</span></label>
+              <label class="chip"><input type="checkbox" value="equipment" checked><span>Zeus / Kit</span></label>
+            </div>
+          </div>
+
+          <div class="field">
+            <span class="label">Primary categories</span>
+            <div class="chips" id="lo-cats"></div>
+          </div>
+        </div>
+
+        <div class="card lo-result" id="lo-result">
+          <div class="lo-empty">Hit <b>Randomize loadout</b> to roll a buy.</div>
+        </div>
+
+        <div class="card lo-pool">
+          <div class="code-head">
+            <h2>Weapon pool</h2>
+            <span class="hint" id="lo-pool-count"></span>
+          </div>
+          <p class="hint">Every CS2 weapon is in the draw. Click one to exclude it.</p>
+          <div id="lo-pool"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <span>Fan-made tool, not affiliated with Valve. Counter-Strike is a trademark of Valve Corporation.</span>
+  </footer>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
